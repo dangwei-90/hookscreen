@@ -3,14 +3,12 @@
 #define _SHIELDSCREEN_H_
 #include <windows.h>
 
-//HMODULE hHookDll;
-
  #ifdef _cplusplus
  extern "C"
  {
 	 #endif
-	    void WINAPI UnInstallLaunchEv();//安装钩子
-	    void WINAPI InstallLaunchEv();//去掉钩子
+	    void WINAPI StopShieldScreen();
+	    void WINAPI StartShieldScreen();
 	 #ifdef _cplusplus
 	 };
  #endif

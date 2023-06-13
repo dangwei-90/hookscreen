@@ -14,23 +14,23 @@
  extern HMODULE hHookDll;
  
 
-_declspec(dllexport) void WINAPI UnInstallLaunchEv()//dll的导出函数
+_declspec(dllexport) void WINAPI StopShieldScreen()//dll的导出函数
 {
      BOOL bRet = UnhookWindowsHookEx(Hook);
 	 if (bRet == FALSE)
 	 {
-		 MessageBox(NULL, (LPCWSTR)"取消hook失败", (LPCWSTR)"取消hook失败", MB_OK);
+		 //MessageBox(NULL, (LPCWSTR)"取消hook失败", (LPCWSTR)"取消hook失败", MB_OK);
 	 }
 }
 
-_declspec(dllexport)void WINAPI InstallLaunchEv()//dll的导出函数
+_declspec(dllexport)void WINAPI StartShieldScreen()//dll的导出函数
  {
 	     Hook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)LauncherHook, hHookDll, 0);
 	
 	     if (Hook == NULL)
 	     {
 	       //strerror(GetLastError());
-			 MessageBox(NULL, (LPCWSTR)"hook失败", (LPCWSTR)"hook失败", MB_OK);
+			 //MessageBox(NULL, (LPCWSTR)"hook失败", (LPCWSTR)"hook失败", MB_OK);
 	    }
  }
 
@@ -46,6 +46,9 @@ LRESULT CALLBACK LauncherHook(int nCode, WPARAM wParam, LPARAM lParam)
 		           BOOL b_rctrl = ::GetAsyncKeyState(VK_RCONTROL);//如果右边Ctrl按下
 	        BOOL b_lAlt = ::GetAsyncKeyState(VK_LMENU);//如果左边Alt按下
 		          BOOL b_rAlt = ::GetAsyncKeyState(VK_RMENU);//如果右边Alt按下
+
+//#define VK_LSHIFT         0xA0
+//#define VK_RSHIFT         0xA1
 		
 	           if (Key_Info->vkCode == VK_SNAPSHOT)
 		           {

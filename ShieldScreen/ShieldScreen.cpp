@@ -7,6 +7,7 @@
  #include <stdio.h>
 
  HHOOK Hook;
+ bool bStart = false;
 
  LRESULT CALLBACK LauncherHook(int nCode, WPARAM wParam, LPARAM lParam);
  void strerror(DWORD errno);
@@ -16,21 +17,29 @@
 
 _declspec(dllexport) void WINAPI StopShieldScreen()//dll的导出函数
 {
-     BOOL bRet = UnhookWindowsHookEx(Hook);
-	 if (bRet == FALSE)
-	 {
-		 //MessageBox(NULL, (LPCWSTR)"取消hook失败", (LPCWSTR)"取消hook失败", MB_OK);
-	 }
+	if (bStart)
+	{
+		bStart = false;
+		BOOL bRet = UnhookWindowsHookEx(Hook);
+		if (bRet == FALSE)
+		{
+			//MessageBox(NULL, (LPCWSTR)"取消hook失败", (LPCWSTR)"取消hook失败", MB_OK);
+		}
+	}
 }
 
 _declspec(dllexport)void WINAPI StartShieldScreen()//dll的导出函数
 {
-	Hook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)LauncherHook, hHookDll, 0);
-	
-	if (Hook == NULL)
+	if (!bStart)
 	{
-		//strerror(GetLastError());
-		//MessageBox(NULL, (LPCWSTR)"hook失败", (LPCWSTR)"hook失败", MB_OK);
+		bStart = true;
+		Hook = SetWindowsHookEx(WH_KEYBOARD_LL, (HOOKPROC)LauncherHook, hHookDll, 0);
+
+		if (Hook == NULL)
+		{
+			//strerror(GetLastError());
+			//MessageBox(NULL, (LPCWSTR)"hook失败", (LPCWSTR)"hook失败", MB_OK);
+		}
 	}
 }
 
@@ -138,20 +147,20 @@ void savelog(const char* s)//向D盘根目录下的my.log文件写log信息
 
  void strerror(DWORD errno)//根据GetLastError()返回值，将错误信息转化为中文，写入my.log文件
  {
-	    void* lpMsgBuf;
-  FormatMessageA(
-	        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-	     FORMAT_MESSAGE_FROM_SYSTEM |
-	       FORMAT_MESSAGE_IGNORE_INSERTS,
-	     NULL,
-	       errno,
-		        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-		        (char*)&lpMsgBuf,
-		       0,
-		        NULL
-		);
+	void* lpMsgBuf;
+	FormatMessageA(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		errno,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+		(char*)&lpMsgBuf,
+		0,
+		NULL
+	);
 
-		   savelog((const char*)lpMsgBuf);
-	   // Free the buffer.
-		    LocalFree(lpMsgBuf);
+	savelog((const char*)lpMsgBuf);
+	// Free the buffer.
+	LocalFree(lpMsgBuf);
  }

@@ -10,8 +10,6 @@
  bool bStart = false;
 
  LRESULT CALLBACK LauncherHook(int nCode, WPARAM wParam, LPARAM lParam);
- void strerror(DWORD errno);
- void savelog(const char* s);
  extern HMODULE hHookDll;
  
 
@@ -37,7 +35,6 @@ _declspec(dllexport)void WINAPI StartShieldScreen()//dll的导出函数
 
 		if (Hook == NULL)
 		{
-			//strerror(GetLastError());
 			//MessageBox(NULL, (LPCWSTR)"hook失败", (LPCWSTR)"hook失败", MB_OK);
 		}
 	}
@@ -133,34 +130,3 @@ LRESULT CALLBACK LauncherHook(int nCode, WPARAM wParam, LPARAM lParam)
 	
     return CallNextHookEx(Hook, nCode, wParam, lParam);
 }
-
-
-void savelog(const char* s)//向D盘根目录下的my.log文件写log信息
-{
-	/*
-	100     FILE * p;
-	101     errno_t err = fopen_s(&p, "D:\\my.log", "a+");//在d盘根目录下生成my.log文件
-	102     fputs(s, p);//fputs是一种函数，具有的功能是向指定的文件写入一个字符串（不自动写入字符串结束标记符‘\0’）。成功写入一个字符串后，文件的位置指针会自动后移，函数返回值为非负整数
-	103     fclose(p);
-	*/
- }
-
- void strerror(DWORD errno)//根据GetLastError()返回值，将错误信息转化为中文，写入my.log文件
- {
-	void* lpMsgBuf;
-	FormatMessageA(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		errno,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-		(char*)&lpMsgBuf,
-		0,
-		NULL
-	);
-
-	savelog((const char*)lpMsgBuf);
-	// Free the buffer.
-	LocalFree(lpMsgBuf);
- }

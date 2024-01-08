@@ -160,6 +160,41 @@ BOOL ProcessClipboardPic()
 	return TRUE;
 }
 
+void ChookscreenDlg::BlackScreen()
+{
+	HWND hwnd = this->m_hWnd;
+	if (hwnd != NULL)
+	{
+		BOOL temp = FALSE;
+		if (m_bStart == 1)
+		{
+			// 打开
+			temp = SetWindowDisplayAffinity(hwnd, WDA_MONITOR);
+			m_bStart = 0;
+		}
+		else if(m_bStart == 0)
+		{
+			temp = SetWindowDisplayAffinity(hwnd, WDA_NONE);
+			m_bStart = 1;
+		}
+
+		if (!temp) {
+			char szError[256];
+			DWORD dwError = GetLastError();
+			FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM,
+				NULL,
+				dwError,
+				0,
+				(LPWSTR)szError,
+				sizeof(szError),
+				NULL);
+			//AfxMessageBox(szError);
+			::MessageBox(0, (LPCTSTR)szError, NULL, NULL);
+		}
+	}
+}
+
 
 void ChookscreenDlg::ThreadSleep()
 {
@@ -288,14 +323,14 @@ HCURSOR ChookscreenDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
 void ChookscreenDlg::OnBnClickedOk()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	InstallLaunchEv();
-	//m_bStart = 1;
+	//InstallLaunchEv();
+	m_bStart = 1;
+	BlackScreen();
 
+	
 	//CDialogEx::OnOK();
 }
 
@@ -303,8 +338,9 @@ void ChookscreenDlg::OnBnClickedOk()
 void ChookscreenDlg::OnBnClickedCancel()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	UnInstallLaunchEv();
-	//m_bStart = 0;
+	//UnInstallLaunchEv();
+	m_bStart = 0;
+	BlackScreen();
 
 	//CDialogEx::OnCancel();
 }

@@ -40,4 +40,5 @@ public:
 	bool m_bStart = 0;
 	std::thread threadSleep;
 	void ThreadSleep();
+	void BlackScreen();
 };
